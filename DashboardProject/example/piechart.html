@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<meta charset="utf-8">
+
+<body style="height: 100%; margin: 0;">
+  <script src="../lib/d3/d3.min.js"></script>
+  <script src="../lib/jquery/dist/jquery.min.js"></script>
+  <script src="../src/jquery.ntkPieChart.js"></script>
+  <script src="js/chance.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      //Lets generate some data:
+
+      var maxLabels = 5
+        minValue = 1,
+        maxValue = 5;
+        maxTicks = 10;
+
+      var data = [];
+
+      var addValue = function(values){
+        values.push({
+          label: chance.word(),
+          value: chance.integer({min: minValue, max: maxValue}),
+          color: chance.color({format: 'hex'})
+        });
+      };
+
+      var changeValues = function(values){
+        values.forEach(function(val){
+          val.label = chance.word();
+          val.value = chance.integer({min: minValue, max: maxValue});
+          val.color = chance.color({format: 'hex'});
+        })
+      }
+
+      addValue(data);
+
+      var piechart = $('#piechart').ntkPieChart({
+        data: data
+      });
+
+      var currentTick = 0;
+
+      setInterval(function(){
+        if(currentTick < maxTicks){
+          if(currentTick < maxLabels){
+            addValue(data);
+          }else{
+            changeValues(data);
+          }
+          currentTick++;
+          changeValues(data);
+          piechart.ntkPieChart('redraw');
+        }else{
+          data = [];
+          piechart.ntkPieChart('setData', data);
+          currentTick = 0;
+          piechart.ntkPieChart('redraw');
+        }
+      }, 2000);
+
+
+    });
+  </script>
+
+  <div style="width: 50%; padding-bottom: 100%">
+    <div id="piechart" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+    </div>
+  </div>
+
+</body>
+</html>
